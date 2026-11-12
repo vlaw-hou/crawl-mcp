@@ -1,5 +1,5 @@
 # Multi-stage build for optimized production image
-FROM python:3.11-slim as builder
+FROM python:3.11-slim-bookworm as builder
 
 # Install system dependencies for building
 RUN apt-get update && apt-get install -y \
@@ -17,31 +17,27 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Production stage
-FROM python:3.11-slim
+FROM python:3.11-slim-bookworm
 
 # Install runtime system dependencies including Playwright requirements
-RUN apt-get update && apt-get install -y \
-    # Playwright dependencies
-    libnss3 \
-    libnspr4 \
-    libasound2 \
-    libatk-bridge2.0-0 \
-    libdrm2 \
-    libgtk-3-0 \
-    libgbm1 \
-    libxss1 \
-    libgconf-2-4 \
-    libxtst6 \
-    libxrandr2 \
-    libasound2 \
-    libpangocairo-1.0-0 \
-    libatk1.0-0 \
-    libcairo-gobject2 \
-    libgtk-3-0 \
-    libgdk-pixbuf2.0-0 \
-    # Additional dependencies for file processing
-    curl \
-    ca-certificates \
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        libasound2 \
+        libatk-bridge2.0-0 \
+        libatk1.0-0 \
+        libcairo-gobject2 \
+        libdrm2 \
+        libgbm1 \
+        libgdk-pixbuf-2.0-0 \
+        libgtk-3-0 \
+        libnspr4 \
+        libnss3 \
+        libpangocairo-1.0-0 \
+        libxrandr2 \
+        libxss1 \
+        libxtst6 \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy virtual environment from builder stage
